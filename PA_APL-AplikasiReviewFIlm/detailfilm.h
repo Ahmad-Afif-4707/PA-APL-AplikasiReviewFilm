@@ -11,24 +11,22 @@ void lihatDetailFilm(int idFilm, bool isAdmin = false) {
         system("cls");
         cetakJudul("Detail Film");
 
-        cout << KUNING << " judul  : " << RESET << filmDipilih->judul  << endl;
-        cout << KUNING << " tahun  : " << RESET << filmDipilih->tahun  << endl;
-        cout << KUNING << " studio : " << RESET << filmDipilih->studio << endl;
-        cout << KUNING << " rating : " << RESET << rataRating(idFilm) << "/10" << endl;
+        cetakGarisTabel();
+        cetakBarisTabel("Judul",  filmDipilih->judul);
+        cetakBarisTabel("Tahun",  to_string(filmDipilih->tahun));
+        cetakBarisTabel("Studio", filmDipilih->studio);
+        cetakBarisTabel("Rating", to_string(rataRating(idFilm)) + "/10");
 
         if (isAdmin == false) {
-            if (sudahFavorit(userAktif->id, idFilm)) {
-                cout << KUNING << " favorit: " << RESET << HIJAU << "ya" << RESET << endl;
-            } else {
-                cout << KUNING << " favorit: " << RESET << "belum" << endl;
-            }
+            string statusFav = sudahFavorit(userAktif->id, idFilm) ? "Ya" : "Belum";
+            cetakBarisTabel("Favorit", statusFav);
         }
+        cetakGarisTabel();
 
         cout << endl << CYAN;
-        cetakGaris('-', 42);
-        cout << KUNING << TEBAL << " semua review" << RESET << endl;
-        cetakGaris('-', 42);
-        cout << RESET;
+        cetakTengah("~ Semua Review ~", LEBAR);
+        cout << RESET << endl;
+        cetakGaris('-', LEBAR);
 
         int daftarIndexReview[MAX * 4];
         int jumlahReviewFilm = 0;
@@ -40,7 +38,6 @@ void lihatDetailFilm(int idFilm, bool isAdmin = false) {
                 daftarIndexReview[jumlahReviewFilm] = i;
                 jumlahReviewFilm++;
 
-                // cari nama user yang review
                 string namaUser = "?";
                 for (int j = 0; j < totalUser; j++) {
                     if (listUser[j].id == listReview[i].idUser) {
@@ -56,85 +53,73 @@ void lihatDetailFilm(int idFilm, bool isAdmin = false) {
                 }
 
                 if (isAdmin == true) {
-                    cout << " [" << jumlahReviewFilm << "] ";
+                    cout << CYAN << " [" << jumlahReviewFilm << "] " << RESET;
                 } else {
-                    cout << " ";
+                    cout << "  ";
                 }
 
-                cout << "[" << namaUser;
-                if (milikSaya) {
-                    cout << HIJAU << " (kamu)" << RESET;
-                }
-                cout << "] " << KUNING << listReview[i].rating << "/10" << RESET << endl;
-                cout << "  " << listReview[i].ulasan << endl << endl;
+                cout << KUNING << namaUser << RESET;
+                if (milikSaya) cout << HIJAU << " (kamu)" << RESET;
+                cout << "  " << KUNING << listReview[i].rating << "/10" << RESET << endl;
+                cout << "  " << listReview[i].ulasan << endl;
+                cetakGaris('-', LEBAR);
                 adaReview = true;
             }
         }
 
         if (adaReview == false) {
-            cout << KUNING << " belum ada review" << RESET << endl;
+            cout << KUNING;
+            cetakTengah("belum ada review", LEBAR);
+            cout << RESET << endl;
+            cetakGaris('-', LEBAR);
         }
 
-        // menu untuk user biasa
         if (isAdmin == false) {
-            string labelReview = "tulis review";
-            if (indexReviewSaya >= 0) {
-                labelReview = "edit review";
-            }
-
-            string labelHapusReview = "---";
-            if (indexReviewSaya >= 0) {
-                labelHapusReview = "hapus review";
-            }
-
-            string labelFavorit = "tambah favorit";
-            if (sudahFavorit(userAktif->id, idFilm)) {
-                labelFavorit = "hapus favorit";
-            }
+            string labelReview      = indexReviewSaya >= 0 ? "Edit Review"    : "Tulis Review";
+            string labelHapusReview = indexReviewSaya >= 0 ? "Hapus Review"   : "---";
+            string labelFavorit     = sudahFavorit(userAktif->id, idFilm) ? "Hapus Favorit" : "Tambah Favorit";
 
             string opsi[4];
             opsi[0] = labelReview;
             opsi[1] = labelHapusReview;
             opsi[2] = labelFavorit;
-            opsi[3] = "kembali";
+            opsi[3] = "Kembali";
 
             int pilihan = pilihMenu(opsi, 4, filmDipilih->judul);
 
             if (pilihan == 0) {
-                // tulis atau edit review
                 system("cls");
-                if (indexReviewSaya >= 0) {
-                    cetakJudul("Edit Review");
-                } else {
-                    cetakJudul("Tulis Review");
-                }
-                cout << KUNING << " film: " << RESET << filmDipilih->judul << endl << endl;
+                cetakJudul(indexReviewSaya >= 0 ? "Edit Review" : "Tulis Review");
 
+                cetakGarisTabel();
+                cetakBarisTabel("Film", filmDipilih->judul);
                 if (indexReviewSaya >= 0) {
-                    cout << KUNING << " rating lama: " << RESET << listReview[indexReviewSaya].rating << "/10" << endl;
-                    cout << KUNING << " ulasan lama: " << RESET << listReview[indexReviewSaya].ulasan << endl << endl;
+                    cetakBarisTabel("Rating", to_string(listReview[indexReviewSaya].rating) + "/10  (lama)");
+                    cetakBarisTabel("Ulasan", listReview[indexReviewSaya].ulasan + "  (lama)");
                 }
+                cetakGarisTabel();
+                cout << endl;
 
                 int ratingBaru = 0;
-                cout << KUNING << " rating (1-10): " << RESET;
+                cout << KUNING << " Rating baru (1-10): " << RESET;
                 cin >> ratingBaru;
 
                 if (cin.fail() || ratingBaru < 1 || ratingBaru > 10) {
                     cin.clear();
                     cin.ignore(100, '\n');
-                    cout << MERAH << " rating tidak valid" << RESET << endl;
+                    cout << MERAH << " Rating tidak valid!" << RESET << endl;
                     tekanEnter();
                     continue;
                 }
 
                 cin.ignore();
                 bersihBuffer();
-                cout << KUNING << " ulasan: " << RESET;
+                cout << KUNING << " Ulasan baru       : " << RESET;
                 string ulasanBaru = "";
                 getline(cin, ulasanBaru);
 
                 if (ulasanBaru.empty()) {
-                    cout << MERAH << " ulasan tidak boleh kosong" << RESET << endl;
+                    cout << MERAH << " Ulasan tidak boleh kosong!" << RESET << endl;
                     tekanEnter();
                     continue;
                 }
@@ -142,41 +127,37 @@ void lihatDetailFilm(int idFilm, bool isAdmin = false) {
                 if (indexReviewSaya >= 0) {
                     listReview[indexReviewSaya].rating = ratingBaru;
                     listReview[indexReviewSaya].ulasan = ulasanBaru;
-                    cout << endl << HIJAU << TEBAL << " review diupdate!" << RESET << endl;
+                    cout << endl << HIJAU << TEBAL << " Review berhasil diperbarui!" << RESET << endl;
                 } else {
                     listReview[totalReview].idUser = userAktif->id;
                     listReview[totalReview].idFilm = idFilm;
                     listReview[totalReview].rating = ratingBaru;
                     listReview[totalReview].ulasan = ulasanBaru;
                     totalReview++;
-                    cout << endl << HIJAU << TEBAL << " review ditambahkan!" << RESET << endl;
+                    cout << endl << HIJAU << TEBAL << " Review berhasil ditambahkan!" << RESET << endl;
                 }
                 tekanEnter();
 
             } else if (pilihan == 1) {
-                // hapus review milik sendiri
-                if (indexReviewSaya < 0) {
-                    continue;
-                }
-                string opsiHapus[] = {"ya hapus", "batal"};
+                if (indexReviewSaya < 0) continue;
+                string opsiHapus[] = {"Ya, Hapus", "Batal"};
                 if (pilihMenu(opsiHapus, 2, "Hapus Review?") == 0) {
                     hapusReviewDi(indexReviewSaya);
                     system("cls");
-                    cout << endl << HIJAU << TEBAL << " review dihapus" << RESET << endl;
+                    cout << endl << HIJAU << TEBAL << " Review berhasil dihapus!" << RESET << endl;
                     tekanEnter();
                 }
 
             } else if (pilihan == 2) {
-                // tambah atau hapus favorit
                 system("cls");
                 if (sudahFavorit(userAktif->id, idFilm)) {
                     hapusDariFavorit(userAktif->id, idFilm);
-                    cout << endl << KUNING << " dihapus dari favorit" << RESET << endl;
+                    cout << endl << KUNING << " Film dihapus dari favorit." << RESET << endl;
                 } else {
                     listFavorit[totalFavorit].idUser = userAktif->id;
                     listFavorit[totalFavorit].idFilm = idFilm;
                     totalFavorit++;
-                    cout << endl << HIJAU << TEBAL << " ditambahkan ke favorit!" << RESET << endl;
+                    cout << endl << HIJAU << TEBAL << " Film ditambahkan ke favorit!" << RESET << endl;
                 }
                 tekanEnter();
 
@@ -185,26 +166,25 @@ void lihatDetailFilm(int idFilm, bool isAdmin = false) {
             }
 
         } else {
-            // mode admin: hanya bisa hapus review
             if (adaReview == false) {
-                string opsi[] = {"kembali"};
+                string opsi[] = {"Kembali"};
                 pilihMenu(opsi, 1, filmDipilih->judul);
                 break;
             }
 
             cout << endl << CYAN;
-            cetakGaris('-', 42);
+            cetakGaris('-', LEBAR);
             cout << RESET;
-            cout << " 1. hapus review" << endl;
-            cout << " 0. kembali" << endl;
-            cout << KUNING << " pilihan: " << RESET;
+            cout << " 1. Hapus review" << endl;
+            cout << " 0. Kembali" << endl;
+            cout << KUNING << " Pilihan: " << RESET;
 
             int pilihan = 0;
             cin >> pilihan;
             bersihBuffer();
 
             if (pilihan == 1) {
-                cout << KUNING << " nomor review yang dihapus: " << RESET;
+                cout << KUNING << " Nomor review yang dihapus: " << RESET;
                 int nomorReview = 0;
                 cin >> nomorReview;
                 bersihBuffer();
@@ -212,10 +192,10 @@ void lihatDetailFilm(int idFilm, bool isAdmin = false) {
                 if (nomorReview >= 1 && nomorReview <= jumlahReviewFilm) {
                     hapusReviewDi(daftarIndexReview[nomorReview - 1]);
                     system("cls");
-                    cout << endl << HIJAU << TEBAL << " review dihapus" << RESET << endl;
+                    cout << endl << HIJAU << TEBAL << " Review berhasil dihapus!" << RESET << endl;
                     tekanEnter();
                 } else {
-                    cout << MERAH << " nomor tidak valid" << RESET << endl;
+                    cout << MERAH << " Nomor tidak valid!" << RESET << endl;
                     tekanEnter();
                 }
             } else {

@@ -171,20 +171,8 @@ void menuDaftarFilm()
                 string opsiUsulan[] = {"ya, usulkan film ini", "tidak"};
                 int pilUsulan = pilihMenu(opsiUsulan, 2, "Usulkan ke Admin");
 
-                if (pilUsulan == 0)
-                {
-                    system("cls");
-                    cetakJudul("Usulkan Film");
-
-                    cout << KUNING << " judul usulan [" << kataCari << "]: " << RESET;
-                    string judulUsulan = bacaInputBaris();
-
-                    if (teksKosongAtauSpasi(judulUsulan))
-                    {
-                        judulUsulan = kataCari;
-                    }
-
-                    simpanUsulanFilm(judulUsulan);
+                    if (pilUsulan == 0) {
+                        simpanUsulanFilm(kataCari);
                 }
                 else
                 {
@@ -242,6 +230,16 @@ void menuDaftarFilm()
                 tekanEnter();
                 continue;
             }
+
+            system("cls");
+                cetakJudul("Pilih Film");
+                for (int i = 0; i < totalFilm; i++)
+            {
+             cout << CYAN << " [" << i+1 << "] " << RESET
+             << listFilm[i].judul << " (" << listFilm[i].tahun << ")"
+             << KUNING << " - " << rataRating(listFilm[i].id) << "/10" << RESET << endl;
+            }
+            cout << endl;
 
             cout << KUNING << " pilih nomor (0 batal): " << RESET;
             int pilihanNomor = 0;
