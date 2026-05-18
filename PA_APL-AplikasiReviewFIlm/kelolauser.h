@@ -38,14 +38,14 @@ void menuKelolaUser() {
                 continue;
             }
 
-            int indexUser = daftarUserBiasa[pilihanDaftar];
+            int indexUser   = daftarUserBiasa[pilihanDaftar];
             int idUserPilih = listUser[indexUser].id;
 
             while (true) {
                 system("cls");
                 cetakJudul("Detail User");
 
-                cout << KUNING << " username: " << RESET << listUser[indexUser].username << endl;
+                cout << KUNING << " username     : " << RESET << listUser[indexUser].username << endl;
 
                 int daftarReviewUser[MAX * 4];
                 int jumlahReviewUser = 0;
@@ -57,7 +57,8 @@ void menuKelolaUser() {
                     }
                 }
 
-                cout << KUNING << " total review: " << RESET << jumlahReviewUser << endl;
+                cout << KUNING << " total review : " << RESET << jumlahReviewUser << endl;
+
                 cout << endl << CYAN;
                 cetakGaris('-', 42);
                 cout << KUNING << TEBAL << " daftar review" << RESET << endl;
@@ -73,7 +74,6 @@ void menuKelolaUser() {
                         if (filmReview != nullptr) {
                             judulFilm = filmReview->judul;
                         }
-
                         cout << CYAN << " [" << i + 1 << "] " << RESET
                              << judulFilm
                              << KUNING << " - " << listReview[daftarReviewUser[i]].rating << "/10" << RESET << endl;
@@ -81,39 +81,10 @@ void menuKelolaUser() {
                     }
                 }
 
-                string opsiUser[] = {"edit username", "hapus user", "hapus review", "kembali"};
-                int pilihanUser = pilihMenu(opsiUser, 4, listUser[indexUser].username);
+                string opsiUser[] = {"hapus user", "hapus review", "kembali"};
+                int pilihanUser = pilihMenu(opsiUser, 3, listUser[indexUser].username);
 
                 if (pilihanUser == 0) {
-                    system("cls");
-                    cetakJudul("Edit Username");
-                    cout << KUNING << " kosongkan input untuk mempertahankan nilai lama" << RESET << endl << endl;
-                    cout << KUNING << " username [" << listUser[indexUser].username << "]: " << RESET;
-
-                    string usernameBaru = bacaInputBaris();
-                    if (!usernameBaru.empty()) {
-                        bool duplikat = false;
-
-                        for (int i = 0; i < totalUser; i++) {
-                            if (i != indexUser && listUser[i].username == usernameBaru) {
-                                duplikat = true;
-                                break;
-                            }
-                        }
-
-                        if (duplikat) {
-                            cout << MERAH << " username sudah dipakai" << RESET << endl;
-                            tekanEnter();
-                            continue;
-                        }
-
-                        listUser[indexUser].username = usernameBaru;
-                    }
-
-                    cout << endl << HIJAU << TEBAL << " data user berhasil diupdate!" << RESET << endl;
-                    tekanEnter();
-
-                } else if (pilihanUser == 1) {
                     string opsiHapus[] = {"ya hapus", "batal"};
                     if (pilihMenu(opsiHapus, 2, "Hapus User?") == 0) {
                         hapusUser(idUserPilih);
@@ -123,7 +94,7 @@ void menuKelolaUser() {
                         break;
                     }
 
-                } else if (pilihanUser == 2) {
+                } else if (pilihanUser == 1) {
                     if (jumlahReviewUser == 0) {
                         cout << MERAH << " user ini belum punya review" << RESET << endl;
                         tekanEnter();
@@ -134,10 +105,7 @@ void menuKelolaUser() {
                     for (int i = 0; i < jumlahReviewUser; i++) {
                         Film* filmReview = cariFilm(listReview[daftarReviewUser[i]].idFilm);
                         string judulFilm = "(film tidak ditemukan)";
-                        if (filmReview != nullptr) {
-                            judulFilm = filmReview->judul;
-                        }
-
+                        if (filmReview != nullptr) judulFilm = filmReview->judul;
                         daftarReview[i] = judulFilm + " - " + to_string(listReview[daftarReviewUser[i]].rating) + "/10";
                     }
                     daftarReview[jumlahReviewUser] = "kembali";
