@@ -11,7 +11,6 @@ void cetakGaris(char kar, int panjang) {
     cout << endl;
 }
 
-// cetak teks rata tengah
 void cetakTengah(string teks, int lebar) {
     int padding = (lebar - (int)teks.size()) / 2;
     if (padding < 0) padding = 0;
@@ -29,14 +28,12 @@ void cetakJudul(string teks) {
     cout << RESET << endl;
 }
 
-// cetak garis tabel horizontal
 void cetakGarisTabel() {
     cout << CYAN << " +";
     for (int i = 0; i < LEBAR - 4; i++) cout << "-";
     cout << "+" << RESET << endl;
 }
 
-// cetak satu baris tabel: | Label      | Nilai |
 void cetakBarisTabel(string label, string nilai) {
     int lebarLabel = 10;
     cout << CYAN << " | " << RESET;
