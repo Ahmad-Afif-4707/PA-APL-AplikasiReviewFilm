@@ -297,34 +297,4 @@ void hapusUser(int idUser)
         }
     }
 }
-
-// insertion sort favorit dari A sampai Z
-void sortFavoritAZ(Film hasil[], int &jumlah)
-{
-    jumlah = 0;
-    for (int i = 0; i < totalFavorit; i++)
-    {
-        if (listFavorit[i].idUser == userAktif->id)
-        {
-            Film *f = cariFilm(listFavorit[i].idFilm);
-            if (f != nullptr)
-            {
-                hasil[jumlah] = *f;
-                jumlah++;
-            }
-        }
-    }
-    for (int i = 1; i < jumlah; i++)
-    {
-        Film kunci = hasil[i];
-        int j = i - 1;
-        while (j >= 0 && hasil[j].judul > kunci.judul)
-        {
-            hasil[j + 1] = hasil[j];
-            j--;
-        }
-        hasil[j + 1] = kunci;
-    }
-}
-
 #endif

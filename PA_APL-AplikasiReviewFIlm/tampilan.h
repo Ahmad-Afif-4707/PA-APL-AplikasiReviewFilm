@@ -2,21 +2,44 @@
 #define TAMPILAN_H
 
 #include "data.h"
+#include <iomanip>
+
+#define LEBAR 52
 
 void cetakGaris(char kar, int panjang) {
-    for (int i = 0; i < panjang; i++) {
-        cout << kar;
-    }
+    for (int i = 0; i < panjang; i++) cout << kar;
     cout << endl;
+}
+
+void cetakTengah(string teks, int lebar) {
+    int padding = (lebar - (int)teks.size()) / 2;
+    if (padding < 0) padding = 0;
+    for (int i = 0; i < padding; i++) cout << " ";
+    cout << teks;
 }
 
 void cetakJudul(string teks) {
     cout << endl << CYAN;
-    cetakGaris('=', 42);
-    cout << " " << KUNING << TEBAL << teks << RESET << endl;
-    cout << CYAN;
-    cetakGaris('=', 42);
+    cetakGaris('=', LEBAR);
+    cout << KUNING << TEBAL;
+    cetakTengah(teks, LEBAR);
+    cout << RESET << endl << CYAN;
+    cetakGaris('=', LEBAR);
     cout << RESET << endl;
+}
+
+void cetakGarisTabel() {
+    cout << CYAN << " +";
+    for (int i = 0; i < LEBAR - 4; i++) cout << "-";
+    cout << "+" << RESET << endl;
+}
+
+void cetakBarisTabel(string label, string nilai) {
+    int lebarLabel = 10;
+    cout << CYAN << " | " << RESET;
+    cout << KUNING << left << setw(lebarLabel) << label << RESET;
+    cout << CYAN << " | " << RESET;
+    cout << left << nilai << endl;
 }
 
 void tekanEnter() {
@@ -29,27 +52,32 @@ int pilihMenu(string opsi[], int jumlahOpsi, string judul) {
     system("cls");
 
     cout << endl << CYAN;
-    cetakGaris('=', 42);
-    cout << " " << KUNING << TEBAL << judul << RESET << endl;
-    cout << CYAN;
-    cetakGaris('=', 42);
+    cetakGaris('=', LEBAR);
+    cout << KUNING << TEBAL;
+    cetakTengah(judul, LEBAR);
+    cout << RESET << endl << CYAN;
+    cetakGaris('=', LEBAR);
     cout << RESET << endl;
 
     int barisAwal = 6;
 
     for (int i = 0; i < jumlahOpsi; i++) {
         if (i == posisi) {
-            cout << HIJAU << TEBAL << "  >> " << opsi[i] << "                   " << RESET << endl;
+            cout << HIJAU << TEBAL << "  >> " << opsi[i];
+            int pad = LEBAR - 5 - (int)opsi[i].size();
+            for (int j = 0; j < pad && j < 20; j++) cout << " ";
+            cout << RESET << endl;
         } else {
             cout << "     " << opsi[i] << endl;
         }
     }
 
     cout << endl << CYAN;
-    cetakGaris('-', 42);
-    cout << KUNING << " panah atas/bawah + enter" << RESET << endl;
-    cout << CYAN;
-    cetakGaris('-', 42);
+    cetakGaris('-', LEBAR);
+    cout << KUNING;
+    cetakTengah("panah atas/bawah + enter", LEBAR);
+    cout << RESET << endl << CYAN;
+    cetakGaris('-', LEBAR);
     cout << RESET;
     cout.flush();
 
@@ -59,11 +87,8 @@ int pilihMenu(string opsi[], int jumlahOpsi, string judul) {
             int arah    = getch();
             int posLama = posisi;
 
-            if (arah == 72 && posisi > 0) {
-                posisi--;
-            } else if (arah == 80 && posisi < jumlahOpsi - 1) {
-                posisi++;
-            }
+            if (arah == 72 && posisi > 0)                   posisi--;
+            else if (arah == 80 && posisi < jumlahOpsi - 1) posisi++;
 
             if (posLama != posisi) {
                 cout << "\033[" << (barisAwal + posLama) << ";1H\033[2K";
@@ -80,4 +105,5 @@ int pilihMenu(string opsi[], int jumlahOpsi, string judul) {
         }
     }
 }
+
 #endif

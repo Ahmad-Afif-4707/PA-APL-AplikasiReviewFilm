@@ -3,6 +3,110 @@
 
 #include "detailfilm.h"
 
+string ubahKeHurufKecil(string teks)
+{
+    for (int i = 0; i < teks.size(); i++)
+    {
+        if (teks[i] >= 'A' && teks[i] <= 'Z')
+        {
+            teks[i] = teks[i] + 32;
+        }
+    }
+    return teks;
+}
+
+bool teksKosongAtauSpasi(const string &teks)
+{
+    if (teks.empty())
+    {
+        return true;
+    }
+
+    for (int i = 0; i < teks.size(); i++)
+    {
+        if (teks[i] != ' ' && teks[i] != '\t')
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool filmSudahAdaJudul(const string &judulDicari)
+{
+    string judulCariKecil = ubahKeHurufKecil(judulDicari);
+
+    for (int i = 0; i < totalFilm; i++)
+    {
+        if (ubahKeHurufKecil(listFilm[i].judul) == judulCariKecil)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool usulanSudahAda(int idUserPengusul, const string &judulDicari)
+{
+    string judulCariKecil = ubahKeHurufKecil(judulDicari);
+
+    for (int i = 0; i < totalUsulan; i++)
+    {
+        if (listUsulan[i].idUser == idUserPengusul &&
+            ubahKeHurufKecil(listUsulan[i].judul) == judulCariKecil)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void simpanUsulanFilm(const string &judulUsulan)
+{
+    if (teksKosongAtauSpasi(judulUsulan))
+    {
+        cout << MERAH << " judul usulan tidak boleh kosong" << RESET << endl;
+        tekanEnter();
+        return;
+    }
+
+    if (totalUsulan >= MAX)
+    {
+        cout << MERAH << " data usulan sudah penuh" << RESET << endl;
+        tekanEnter();
+        return;
+    }
+
+    if (filmSudahAdaJudul(judulUsulan))
+    {
+        cout << KUNING << " film itu sudah ada di daftar film" << RESET << endl;
+        tekanEnter();
+        return;
+    }
+
+    int idPengusul = 0;
+    if (userAktif != nullptr)
+    {
+        idPengusul = userAktif->id;
+    }
+
+    if (usulanSudahAda(idPengusul, judulUsulan))
+    {
+        cout << KUNING << " usulan film yang sama sudah pernah kamu kirim" << RESET << endl;
+        tekanEnter();
+        return;
+    }
+
+    listUsulan[totalUsulan].id = idUsulanBaru++;
+    listUsulan[totalUsulan].judul = judulUsulan;
+    listUsulan[totalUsulan].idUser = idPengusul;
+    totalUsulan++;
+
+    cout << endl
+         << HIJAU << TEBAL << " usulan film berhasil disimpan!" << RESET << endl;
+    tekanEnter();
+}
+
 void menuDaftarFilm()
 {
     while (true)
@@ -16,8 +120,6 @@ void menuDaftarFilm()
         }
         else
         {
-            // UBAH tampilan daftar film, hapus pencarian nama user pemilik film
-            // cukup tampilkan nomor, judul, tahun, dan rata-rata rating
             for (int i = 0; i < totalFilm; i++)
             {
                 cout << CYAN << " [" << i + 1 << "] " << RESET
@@ -26,8 +128,6 @@ void menuDaftarFilm()
             }
         }
 
-        // HAPUS opsi "tambah film" dari menu ini
-        // kurangi jumlah opsi dan sesuaikan penomoran pilihan di bawah
         string opsi[] = {"cari film", "pilih dari list", "kembali"};
         int pil = pilihMenu(opsi, 3, "Daftar Film");
 
@@ -35,52 +135,91 @@ void menuDaftarFilm()
         {
             system("cls");
             cetakJudul("Cari Film");
-            cin.ignore();
-            bersihBuffer();
+
             cout << KUNING << " ketik judul: " << RESET;
-            string kataCari;
-            getline(cin, kataCari);
+            string kataCari = bacaInputBaris();
+
+            if (teksKosongAtauSpasi(kataCari))
+            {
+                cout << MERAH << " judul pencarian tidak boleh kosong" << RESET << endl;
+                tekanEnter();
+                continue;
+            }
 
             int indexHasil[MAX];
             int totalHasil = 0;
+            string kataCariKecil = ubahKeHurufKecil(kataCari);
 
             for (int i = 0; i < totalFilm; i++)
             {
-                string judulKecil = listFilm[i].judul;
-                string cariKecil = kataCari;
-                for (int j = 0; j < judulKecil.size(); j++)
-                    judulKecil[j] = tolower(judulKecil[j]);
-                for (int j = 0; j < cariKecil.size(); j++)
-                    cariKecil[j] = tolower(cariKecil[j]);
+                string judulKecil = ubahKeHurufKecil(listFilm[i].judul);
 
-                if (judulKecil.find(cariKecil) != string::npos)
-                    indexHasil[totalHasil++] = i;
+                if (judulKecil.find(kataCariKecil) != string::npos)
+                {
+                    indexHasil[totalHasil] = i;
+                    totalHasil++;
+                }
             }
 
             if (totalHasil == 0)
             {
-                // UBAH bagian ini, jika film tidak ditemukan tawarkan opsi untuk mengusulkan
-                // film tersebut ke admin, simpan usulan ke listUsulan jika user setuju
-                cout << endl
-                     << KUNING << " film tidak ditemukan" << RESET << endl;
-                tekanEnter();
+                system("cls");
+                cetakJudul("Film Tidak Ditemukan");
+
+                cout << KUNING << " film tidak ditemukan" << RESET << endl << endl;
+
+                string opsiUsulan[] = {"ya, usulkan film ini", "tidak"};
+                int pilUsulan = pilihMenu(opsiUsulan, 2, "Usulkan ke Admin");
+
+                    if (pilUsulan == 0) {
+                        simpanUsulanFilm(kataCari);
+                }
+                else
+                {
+                    cout << endl << KUNING << " usulan dibatalkan" << RESET << endl;
+                    tekanEnter();
+                }
             }
             else
             {
                 system("cls");
                 cetakJudul("Hasil Cari");
+
                 for (int i = 0; i < totalHasil; i++)
+                {
                     cout << CYAN << " [" << i + 1 << "] " << RESET
                          << listFilm[indexHasil[i]].judul
                          << " (" << listFilm[indexHasil[i]].tahun << ")" << endl;
+                }
 
-                cout << endl
-                     << KUNING << " pilih nomor (0 batal): " << RESET;
-                int pilihanNomor;
-                cin >> pilihanNomor;
-                bersihBuffer();
+                cout << endl << KUNING << " pilih nomor (0 batal): " << RESET;
+                int pilihanNomor = 0;
+
+                if (!(cin >> pilihanNomor))
+                {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << MERAH << " input tidak valid" << RESET << endl;
+                    tekanEnter();
+                    continue;
+                }
+
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+                if (pilihanNomor == 0)
+                {
+                    continue;
+                }
+
                 if (pilihanNomor >= 1 && pilihanNomor <= totalHasil)
+                {
                     lihatDetailFilm(listFilm[indexHasil[pilihanNomor - 1]].id);
+                }
+                else
+                {
+                    cout << MERAH << " nomor tidak valid" << RESET << endl;
+                    tekanEnter();
+                }
             }
         }
         else if (pil == 1)
@@ -91,18 +230,50 @@ void menuDaftarFilm()
                 tekanEnter();
                 continue;
             }
+
+            system("cls");
+                cetakJudul("Pilih Film");
+                for (int i = 0; i < totalFilm; i++)
+            {
+             cout << CYAN << " [" << i+1 << "] " << RESET
+             << listFilm[i].judul << " (" << listFilm[i].tahun << ")"
+             << KUNING << " - " << rataRating(listFilm[i].id) << "/10" << RESET << endl;
+            }
+            cout << endl;
+
             cout << KUNING << " pilih nomor (0 batal): " << RESET;
-            int pilihanNomor;
-            cin >> pilihanNomor;
-            bersihBuffer();
+            int pilihanNomor = 0;
+
+            if (!(cin >> pilihanNomor))
+            {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << MERAH << " input tidak valid" << RESET << endl;
+                tekanEnter();
+                continue;
+            }
+
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+            if (pilihanNomor == 0)
+            {
+                continue;
+            }
 
             if (pilihanNomor >= 1 && pilihanNomor <= totalFilm)
             {
                 lihatDetailFilm(listFilm[pilihanNomor - 1].id);
             }
+            else
+            {
+                cout << MERAH << " nomor tidak valid" << RESET << endl;
+                tekanEnter();
+            }
         }
         else
+        {
             break;
+        }
     }
 }
 
