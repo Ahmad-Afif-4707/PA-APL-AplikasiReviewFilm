@@ -54,7 +54,6 @@ void menuUsulanFilm() {
 
             cout << endl << KUNING << " nomor (0 batal): " << RESET;
 
-            // pakai bacaInputBaris agar enter kosong tidak lolos
             string inputNomor = bacaInputBaris();
             if (inputNomor.empty() || !hanyaAngka(inputNomor)) {
                 cout << MERAH << " input tidak valid" << RESET << endl;
