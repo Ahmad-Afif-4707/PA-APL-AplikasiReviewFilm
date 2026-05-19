@@ -182,8 +182,8 @@ void menuFavorit()
             for (int i = 0; i < totalFav; i++)
             {
                 cout << CYAN << " [" << i + 1 << "] " << RESET
-                     << filmFav[i].judul << " (" << filmFav[i].tahun << ")"
-                     << KUNING << " - " << rataRating(filmFav[i].id) << "/10" << RESET << endl;
+                    << filmFav[i].judul << " (" << filmFav[i].tahun << ")"
+                    << KUNING << " - " << rataRating(filmFav[i].id) << "/10" << RESET << endl;
             }
         }
 
@@ -200,18 +200,36 @@ void menuFavorit()
             }
 
             cout << KUNING << " nomor film: " << RESET;
-            int nomorPilih = 0;
 
-            if (!(cin >> nomorPilih))
+            string input;
+            getline(cin, input);
+
+            if (teksKosongAtauSpasiKhusus(input))
             {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << MERAH << " input tidak valid" << RESET << endl;
+                cout << MERAH << " input tidak boleh kosong" << RESET << endl;
                 tekanEnter();
                 continue;
             }
 
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            bool validAngka = true;
+
+            for (int i = 0; i < input.length(); i++)
+            {
+                if (!isdigit(input[i]))
+                {
+                    validAngka = false;
+                    break;
+                }
+            }
+
+            if (!validAngka)
+            {
+                cout << MERAH << " input harus berupa angka" << RESET << endl;
+                tekanEnter();
+                continue;
+            }
+
+            int nomorPilih = stoi(input);
 
             if (nomorPilih >= 1 && nomorPilih <= totalFav)
             {
@@ -287,18 +305,36 @@ void menuHistory()
             }
 
             cout << KUNING << " nomor review: " << RESET;
-            int nomorPilih = 0;
-
-            if (!(cin >> nomorPilih))
+                    
+            string input;
+            getline(cin, input);
+                    
+            if (teksKosongAtauSpasiKhusus(input))
             {
-                cin.clear();
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << MERAH << " input tidak valid" << RESET << endl;
+                cout << MERAH << " input tidak boleh kosong" << RESET << endl;
                 tekanEnter();
                 continue;
             }
-
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            
+            bool validAngka = true;
+            
+            for (int i = 0; i < input.length(); i++)
+            {
+                if (!isdigit(input[i]))
+                {
+                    validAngka = false;
+                    break;
+                }
+            }
+            
+            if (!validAngka)
+            {
+                cout << MERAH << " input harus berupa angka" << RESET << endl;
+                tekanEnter();
+                continue;
+            }
+            
+            int nomorPilih = stoi(input);
 
             if (nomorPilih >= 1 && nomorPilih <= totalHistory)
             {
