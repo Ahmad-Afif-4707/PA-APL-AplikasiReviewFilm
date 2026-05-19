@@ -33,6 +33,10 @@ int main()
     listReview[totalReview++] = {2, 4, 10, "Ending yang memuaskan untuk saga Avengers!"};
     listReview[totalReview++] = {2, 5, 9, "Magis dan nostalgik, selalu enak ditonton."};
 
+    listFavorit[totalFavorit++] = {2, 1};
+    listFavorit[totalFavorit++] = {2, 2};
+    listFavorit[totalFavorit++] = {2, 5};
+
     menuAwal();
     return 0;
 }
